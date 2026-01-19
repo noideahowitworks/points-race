@@ -1,73 +1,98 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8" />
-<title>Гонка за 50 пунктов</title>
-<style>
-body {
-font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-background: linear-gradient(135deg, #fde2e4, #e0f2fe);
-margin: 0;
-padding: 20px;
+import React, { useEffect, useState } from "react";
+
+
+const GOAL = 50;
+
+
+const defaultPlayers = [
+{ id: 1, name: "Участник 1", points: 0, avatar: "😀" },
+{ id: 2, name: "Участник 2", points: 0, avatar: "😎" },
+{ id: 3, name: "Участник 3", points: 0, avatar: "🤩" },
+];
+
+
+function loadPlayers() {
+try {
+const saved = localStorage.getItem("points-race-players");
+return saved ? JSON.parse(saved) : defaultPlayers;
+} catch {
+return defaultPlayers;
+}
 }
 
 
-h1 { text-align: center; }
+export default function App() {
+const [players, setPlayers] = useState(loadPlayers);
+const [delta, setDelta] = useState(1);
 
 
-.controls {
-text-align: center;
-margin-bottom: 20px;
+useEffect(() => {
+localStorage.setItem("points-race-players", JSON.stringify(players));
+}, [players]);
+
+
+function updatePoints(id, change) {
+setPlayers((prev) =>
+prev.map((p) =>
+p.id === id ? { ...p, points: p.points + change } : p
+)
+);
 }
 
 
-.players {
-max-width: 500px;
-margin: 0 auto;
-display: flex;
-flex-direction: column;
-gap: 16px;
+useEffect(() => {
+const winner = players.find((p) => p.points >= GOAL);
+if (winner) {
+setTimeout(() => {
+alert(`🎉 Победитель: ${winner.name}!`);
+setPlayers(defaultPlayers);
+localStorage.removeItem("points-race-players");
+}, 300);
+}
+}, [players]);
+
+
+return (
+<div className="min-h-screen bg-gradient-to-br from-pink-100 to-sky-100 p-6">
+<h1 className="text-3xl font-bold text-center mb-6">🏁 Гонка за 50 пунктов</h1>
+
+
+<div className="flex justify-center gap-4 mb-6">
+<span className="self-center">Изменение очков:</span>
+<input
+type="number"
+value={delta}
+onChange={(e) => setDelta(Number(e.target.value))}
+className="w-20 p-1 rounded border"
+/>
+</div>
+
+
+<div className="grid gap-6 max-w-xl mx-auto">
+{players.map((p) => (
+<PlayerCard
+key={p.id}
+player={p}
+onAdd={() => updatePoints(p.id, delta)}
+onSub={() => updatePoints(p.id, -delta)}
+/>
+))}
+</div>
+
+
+<p className="text-center text-sm text-gray-500 mt-8">
+Прогресс сохраняется автоматически в браузере
+</p>
+</div>
+);
 }
 
 
-.card {
-background: white;
-border-radius: 16px;
-padding: 12px;
-box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+function PlayerCard({ player, onAdd, onSub }) {
+const progress = Math.min(player.points / GOAL, 1);
 
 
-.top {
-display: flex;
-align-items: center;
-gap: 12px;
-}
-
-
-.avatar {
-font-size: 40px;
-}
-
-
-.bar {
-background: #e5e7eb;
-height: 14px;
-border-radius: 8px;
-overflow: hidden;
-margin: 8px 0;
-}
-
-
-.fill {
-height: 100%;
-background: #4ade80;
-width: 0%;
-transition: width 0.5s ease;
-}
-
-
-.buttons {
-display: flex;
-gap: 8px;
-</html>
+return (
+<div className="bg-white rounded-2xl shadow p-4">
+<div className="flex items-center gap-4 mb-2">
+<div className="text-4xl">{player.avatar}</div>
