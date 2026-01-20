@@ -1,36 +1,4 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8" />
-<title>Гонка за 50 пунктов</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-body {
-margin: 0;
-padding: 20px;
-font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-background: linear-gradient(135deg, #fde2e4, #e0f2fe);
-}
-
-
-h1 {
-text-align: center;
-margin-bottom: 10px;
-}
-
-
-.controls {
-text-align: center;
-margin-bottom: 20px;
-}
-
-.players {
-max-width: 500px;
-margin: 0 auto;
-display: flex;
-flex-direction: column;
-gap: 16px;
-}
 
 
 .card {
@@ -78,6 +46,7 @@ display: flex;
 gap: 8px;
 }
 
+
 button {
 flex: 1;
 border: none;
@@ -98,40 +67,19 @@ font-size: 12px;
 color: #555;
 margin-top: 20px;
 }
-</style>
-</head>
-<body>
 
 
-<h1>🏁 Гонка за 50 пунктов</h1>
-
-
-<div class="controls">
-Изменение пунктов:
-<input id="delta" type="number" value="1" style="width:60px;" />
-</div>
-
-
-<div class="players" id="players"></div>
-
-
-<div class="footer">Прогресс сохраняется автоматически</div>
-
-
-<script>
-const GOAL = 50;
-const STORAGE_KEY = "points_race_players";
-
-
-const defaultPlayers = [
-{ id: 1, name: "Luca", points: 0, avatar: "luca.png" },
-{ id: 2, name: "Ezra", points: 0, avatar: "ezra.png" },
-{ id: 3, name: "Raphael", points: 0, avatar: "raphael.png" }
-];
-
-
-let players = loadPlayers();
-
+/* ===== CONFETTI ===== */
+.confetti {
+position: fixed;
+top: -10px;
+width: 8px;
+height: 12px;
+opacity: 0.8;
+pointer-events: none;
+animation: fall linear forwards;
+z-index: 9999;
+}
 
 function loadPlayers() {
 try {
@@ -141,6 +89,7 @@ return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultPlayers));
 return JSON.parse(JSON.stringify(defaultPlayers));
 }
 }
+
 
 function savePlayers() {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
@@ -166,10 +115,11 @@ checkWinner();
 function checkWinner() {
 const winner = players.find(p => p.points >= GOAL);
 if (winner) {
+launchConfetti();
 setTimeout(() => {
 alert("🎉 Победитель: " + winner.name + "!");
 resetGame();
-}, 100);
+}, 800);
 }
 }
 
@@ -189,7 +139,6 @@ container.innerHTML = "";
 players.forEach(p => {
 const card = document.createElement("div");
 card.className = "card";
-
 
 const progress = Math.min(p.points / GOAL, 1) * 100;
 
@@ -216,6 +165,26 @@ card.querySelector(".minus").onclick = () => changePoints(p.id, -getDelta());
 
 container.appendChild(card);
 });
+}
+
+
+function launchConfetti() {
+const colors = ["#ff6b6b", "#ffd93d", "#6bcB77", "#4dabf7", "#c77dff"];
+
+
+for (let i = 0; i < 120; i++) {
+const confetti = document.createElement("div");
+confetti.className = "confetti";
+confetti.style.left = Math.random() * 100 + "vw";
+confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+
+
+document.body.appendChild(confetti);
+
+
+setTimeout(() => confetti.remove(), 4000);
+}
 }
 
 
