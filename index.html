@@ -64,11 +64,9 @@
     .bar.flash-red { box-shadow: 0 0 0 3px rgba(248,113,113,0.7); }
 
     .bar.flash-green, .bar.flash-red {
-      animation: flash 0.6s ease;
+      transition: box-shadow 0.2s ease;
     }
 
-    @keyframes flash {
-      0% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
       50% { }
       100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
     }
@@ -179,6 +177,17 @@ function changePoints(id, delta) {
   highlightBar(id, player.points - oldPoints);
   checkWinner();
 }
+
+function highlightBar(id, diff) {
+  const bar = document.querySelector(`[data-player-bar="${id}"]`);
+  if (!bar) return;
+
+  const cls = diff >= 0 ? "flash-green" : "flash-red";
+  bar.classList.add(cls);
+
+  setTimeout(() => bar.classList.remove(cls), 400);
+}
+
 
 function highlightBar(id, diff) {
   const bar = document.querySelector(`[data-player-bar="${id}"]`);
