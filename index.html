@@ -1,279 +1,199 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Гонка за 50 пунктов</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #fde2e4, #e0f2fe);
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Гонка за 50 пунктов</title>
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
 
-    .controls {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+<style>
+body{
+margin:0;
+padding:20px;
+font-family:system-ui, -apple-system, sans-serif;
+background:linear-gradient(135deg,#fde2e4,#e0f2fe);
+}
 
-    .players {
-      max-width: 500px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
 
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+h1{text-align:center}
 
-    .top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
 
-    .avatar img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+.players{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
-    .bar {
-      background: #e5e7eb;
-      height: 14px;
-      border-radius: 8px;
-      overflow: hidden;
-      margin: 8px 0 10px 0;
-      position: relative;
-    }
 
-    .bar.flash-green { box-shadow: 0 0 0 3px rgba(34,197,94,0.6); }
-    .bar.flash-red { box-shadow: 0 0 0 3px rgba(248,113,113,0.7); }
+.card{
+background:#fff;
+border-radius:16px;
+padding:12px;
+box-shadow:0 4px 10px rgba(0,0,0,.1)
+}
 
-    .bar.flash-green, .bar.flash-red {
-      transition: box-shadow 0.2s ease;
-    }
 
-      50% { }
-      100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
-    }
+.top{display:flex;align-items:center;gap:12px}
+.avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover}
 
-    .fill {
-      height: 100%;
-      background: #4ade80;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
 
-    .buttons {
-      display: flex;
-      gap: 8px;
-    }
+.bar{
+background:#e5e7eb;
+height:14px;
+border-radius:8px;
+overflow:hidden;
+margin:8px 0 10px;
+}
 
-    button {
-      flex: 1;
-      border: none;
-      border-radius: 10px;
-      padding: 6px;
-      font-size: 18px;
-      cursor: pointer;
-    }
 
-    .plus { background: #22c55e; color: white; }
-    .minus { background: #f87171; color: white; }
+.fill{height:100%;background:#4ade80;width:0%;transition:width .4s ease}
 
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #555;
-      margin-top: 20px;
-    }
 
-    /* ===== CONFETTI ===== */
-    .confetti {
-      position: fixed;
-      top: -10px;
-      width: 8px;
-      height: 12px;
-      opacity: 0.8;
-      pointer-events: none;
-      animation: fall linear forwards;
-      z-index: 9999;
-    }
+.bar.flash-green{box-shadow:0 0 0 3px rgba(34,197,94,.6)}
+.bar.flash-red{box-shadow:0 0 0 3px rgba(248,113,113,.7)}
 
-    @keyframes fall {
-      to {
-        transform: translateY(110vh) rotate(720deg);
-      }
-    }
-  </style>
+
+.buttons{display:flex;gap:8px}
+button{flex:1;border:none;border-radius:10px;padding:6px;font-size:18px;cursor:pointer}
+.plus{background:#22c55e;color:#fff}
+.minus{background:#f87171;color:#fff}
+
+/* confetti */
+.confetti{
+position:fixed;
+top:-10px;
+width:8px;
+height:12px;
+opacity:.8;
+pointer-events:none;
+animation:fall linear forwards;
+z-index:9999
+}
+
+
+@keyframes fall{
+to{transform:translateY(110vh) rotate(720deg)}
+}
+</style>
 </head>
 <body>
 
+
 <h1>🏁 Гонка за 50 пунктов</h1>
 
-<div class="controls">
-  Изменение пунктов:
-  <input id="delta" type="number" value="1" style="width:60px;" />
-</div>
 
 <div class="players" id="players"></div>
 
-<div class="footer">Прогресс сохраняется автоматически</div>
 
 <script>
-const GOAL = 50;
-const STORAGE_KEY = "points_race_players";
+const GOAL=50;
+const STORAGE_KEY="points_race";
 
-const defaultPlayers = [
-  { id: 1, name: "Luca", points: 0, avatar: "luca.png" },
-  { id: 2, name: "Ezra", points: 0, avatar: "ezra.png" },
-  { id: 3, name: "Raphael", points: 0, avatar: "raphael.png" }
+
+const defaultPlayers=[
+{id:1,name:"Luca",points:0,avatar:"luca.png"},
+{id:2,name:"Ezra",points:0,avatar:"ezra.png"},
+{id:3,name:"Raphael",points:0,avatar:"raphael.png"}
 ];
 
-let players = loadPlayers();
+let players=load();
 
-function loadPlayers() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultPlayers));
-  } catch (e) {
-    return JSON.parse(JSON.stringify(defaultPlayers));
-  }
-}
 
-function savePlayers() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
-}
-
-function getDelta() {
-  const val = parseInt(document.getElementById("delta").value);
-  return isNaN(val) ? 1 : val;
-}
-
-function changePoints(id, delta) {
-  const player = players.find(p => p.id === id);
-  if (!player) return;
-
-  const oldPoints = player.points;
-  player.points += delta;
-
-  savePlayers();
-  render();
-
-  highlightBar(id, player.points - oldPoints);
-  checkWinner();
-}
-
-function highlightBar(id, diff) {
-  const bar = document.querySelector(`[data-player-bar="${id}"]`);
-  if (!bar) return;
-
-  const cls = diff >= 0 ? "flash-green" : "flash-red";
-  bar.classList.add(cls);
-
-  setTimeout(() => bar.classList.remove(cls), 400);
+function load(){
+const s=localStorage.getItem(STORAGE_KEY);
+return s?JSON.parse(s):JSON.parse(JSON.stringify(defaultPlayers));
 }
 
 
-function highlightBar(id, diff) {
-  const bar = document.querySelector(`[data-player-bar="${id}"]`);
-  if (!bar) return;
-
-  const cls = diff >= 0 ? "flash-green" : "flash-red";
-  bar.classList.add(cls);
-
-  setTimeout(() => bar.classList.remove(cls), 600);
+function save(){
+localStorage.setItem(STORAGE_KEY,JSON.stringify(players));
 }
 
-  const player = players.find(p => p.id === id);
-  if (!player) return;
-  player.points += delta;
-  savePlayers();
-  render();
-  checkWinner();
+
+function changePoints(id,delta){
+const p=players.find(x=>x.id===id);
+if(!p)return;
+const old=p.points;
+p.points+=delta;
+save();
+render();
+highlight(id,p.points-old);
+checkWinner();
 }
 
-function checkWinner() {
-  const winner = players.find(p => p.points >= GOAL);
-  if (winner) {
-    launchConfetti();
-    setTimeout(() => {
-      alert("🎉 Победитель: " + winner.name + "!");
-      resetGame();
-    }, 800);
-  }
+
+function highlight(id,diff){
+const bar=document.querySelector(`[data-bar='${id}']`);
+if(!bar)return;
+const cls=diff>=0?"flash-green":"flash-red";
+bar.classList.add(cls);
+setTimeout(()=>bar.classList.remove(cls),400);
 }
 
-function resetGame() {
-  players = JSON.parse(JSON.stringify(defaultPlayers));
-  localStorage.removeItem(STORAGE_KEY);
-  render();
+
+function checkWinner(){
+const w=players.find(p=>p.points>=GOAL);
+if(w){
+launchConfetti();
+setTimeout(()=>{
+alert("🎉 Победитель: "+w.name);
+reset();
+},600);
+}
 }
 
-function render() {
-  const container = document.getElementById("players");
-  container.innerHTML = "";
 
-  players.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const progress = Math.min(p.points / GOAL, 1) * 100;
-
-    card.innerHTML = `
-      <div class="top">
-        <div class="avatar"><img src="${p.avatar}" alt="${p.name}"></div>
-        <div>
-          <div><strong>${p.name}</strong></div>
-          <div>${p.points} пунктов</div>
-        </div>
-      </div>
-      <div class="bar" data-player-bar="${p.id}"><div class="fill" style="width:${progress}%"></div></div>
-      <div class="buttons">
-        <button class="plus">+</button>
-        <button class="minus">−</button>
-      </div>
-    `;
-
-    card.querySelector(".plus").onclick = () => changePoints(p.id, getDelta());
-    card.querySelector(".minus").onclick = () => changePoints(p.id, -getDelta());
-
-    container.appendChild(card);
-  });
+function reset(){
+players=JSON.parse(JSON.stringify(defaultPlayers));
+localStorage.removeItem(STORAGE_KEY);
+render();
 }
 
-function launchConfetti() {
-  const colors = ["#ff6b6b", "#ffd93d", "#6bcB77", "#4dabf7", "#c77dff"];
 
-  for (let i = 0; i < 120; i++) {
-    const confetti = document.createElement("div");
-    confetti.className = "confetti";
-    confetti.style.left = Math.random() * 100 + "vw";
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+function render(){
+const root=document.getElementById("players");
+root.innerHTML="";
 
-    document.body.appendChild(confetti);
 
-    setTimeout(() => confetti.remove(), 4000);
-  }
+players.forEach(p=>{
+const progress=Math.max(0,Math.min(p.points/GOAL,1))*100;
+
+const div=document.createElement("div");
+div.className="card";
+div.innerHTML=`
+<div class="top">
+<div class="avatar"><img src="${p.avatar}"></div>
+<div><b>${p.name}</b><br>${p.points} пунктов</div>
+</div>
+<div class="bar" data-bar="${p.id}"><div class="fill" style="width:${progress}%"></div></div>
+<div class="buttons">
+<button class="plus">+</button>
+<button class="minus">−</button>
+</div>`;
+
+
+div.querySelector(".plus").onclick=()=>changePoints(p.id,1);
+div.querySelector(".minus").onclick=()=>changePoints(p.id,-1);
+
+
+root.appendChild(div);
+});
 }
+
+
+function launchConfetti(){
+const colors=["#ff6b6b","#ffd93d","#6bcb77","#4dabf7","#c77dff"];
+for(let i=0;i<120;i++){
+const c=document.createElement("div");
+c.className="confetti";
+c.style.left=Math.random()*100+"vw";
+c.style.background=colors[Math.floor(Math.random()*colors.length)];
+c.style.animationDuration=2+Math.random()*2+"s";
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),4000);
+}
+}
+
 
 render();
 </script>
+
 
 </body>
 </html>
