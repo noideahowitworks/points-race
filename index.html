@@ -57,6 +57,20 @@
       border-radius: 8px;
       overflow: hidden;
       margin: 8px 0 10px 0;
+      position: relative;
+    }
+
+    .bar.flash-green { box-shadow: 0 0 0 3px rgba(34,197,94,0.6); }
+    .bar.flash-red { box-shadow: 0 0 0 3px rgba(248,113,113,0.7); }
+
+    .bar.flash-green, .bar.flash-red {
+      animation: flash 0.6s ease;
+    }
+
+    @keyframes flash {
+      0% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+      50% { }
+      100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
     }
 
     .fill {
@@ -155,6 +169,29 @@ function getDelta() {
 function changePoints(id, delta) {
   const player = players.find(p => p.id === id);
   if (!player) return;
+
+  const oldPoints = player.points;
+  player.points += delta;
+
+  savePlayers();
+  render();
+
+  highlightBar(id, player.points - oldPoints);
+  checkWinner();
+}
+
+function highlightBar(id, diff) {
+  const bar = document.querySelector(`[data-player-bar="${id}"]`);
+  if (!bar) return;
+
+  const cls = diff >= 0 ? "flash-green" : "flash-red";
+  bar.classList.add(cls);
+
+  setTimeout(() => bar.classList.remove(cls), 600);
+}
+
+  const player = players.find(p => p.id === id);
+  if (!player) return;
   player.points += delta;
   savePlayers();
   render();
@@ -196,7 +233,7 @@ function render() {
           <div>${p.points} пунктов</div>
         </div>
       </div>
-      <div class="bar"><div class="fill" style="width:${progress}%"></div></div>
+      <div class="bar" data-player-bar="${p.id}"><div class="fill" style="width:${progress}%"></div></div>
       <div class="buttons">
         <button class="plus">+</button>
         <button class="minus">−</button>
