@@ -80,9 +80,9 @@ function changePoints(id,delta){
 
  if(delta>0){
    // звук транспорта с задержкой после клика
-   setTimeout(()=>playTransportSound(p), 350);
+   setTimeout(()=>playTransportSound(p), 450);
  }else{
-   setTimeout(()=>play(oopsSound), 350);
+   setTimeout(()=>play(oopsSound), 450);
  }
 
  checkWinner();
@@ -166,4 +166,5 @@ render();
 </script>
 </body>
 </html>
+
 
