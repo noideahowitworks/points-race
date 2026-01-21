@@ -79,9 +79,10 @@ function changePoints(id,delta){
  highlight(id,p.points-old);
 
  if(delta>0){
-   playTransportSound(p);
+   // звук транспорта с задержкой после клика
+   setTimeout(()=>playTransportSound(p), 180);
  }else{
-   play(oopsSound);
+   setTimeout(()=>play(oopsSound), 180);
  }
 
  checkWinner();
