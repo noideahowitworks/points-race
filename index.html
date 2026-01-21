@@ -36,9 +36,9 @@ const GOAL=50;
 const STORAGE_KEY="points_race";
 
 const defaultPlayers=[
- {id:1,name:"Luca",points:0,avatar:"luca.png",vehicle:"🐢"},
- {id:2,name:"Ezra",points:0,avatar:"ezra.png",vehicle:"🚀"},
- {id:3,name:"Raphael",points:0,avatar:"raphael.png",vehicle:"🐎"}
+ {id:1,name:"Luca",points:0,avatar:"luca.png",vehicle:"🐢",sound:"turtle.mp3"},
+ {id:2,name:"Ezra",points:0,avatar:"ezra.png",vehicle:"🚀",sound:"rocket.mp3"},
+ {id:3,name:"Raphael",points:0,avatar:"raphael.png",vehicle:"🐎",sound:"horse.mp3"}
 ];
 
 let players=load();
@@ -50,12 +50,23 @@ function load(){
 
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(players));}
 
-// Звук кнопок (безопасно)
-let clickSound=null;
-try{clickSound=new Audio("click.mp3");clickSound.volume=0.5;}catch(e){}
-function playClick(){
- if(!clickSound) return;
- try{clickSound.currentTime=0;clickSound.play();}catch(e){}
+// === ЗВУКИ ===
+let clickSound=null, oopsSound=null;
+try{clickSound=new Audio("click.mp3"); clickSound.volume=0.5;}catch(e){}
+try{oopsSound=new Audio("oops.mp3"); oopsSound.volume=0.6;}catch(e){}
+
+function play(sound){
+ if(!sound) return;
+ try{sound.currentTime=0; sound.play();}catch(e){}
+}
+
+function playTransportSound(player){
+ if(!player.sound) return;
+ try{
+  const s=new Audio(player.sound);
+  s.volume=0.7;
+  s.play();
+ }catch(e){}
 }
 
 function changePoints(id,delta){
@@ -66,6 +77,13 @@ function changePoints(id,delta){
  save();
  render();
  highlight(id,p.points-old);
+
+ if(delta>0){
+   playTransportSound(p);
+ }else{
+   play(oopsSound);
+ }
+
  checkWinner();
 }
 
@@ -123,7 +141,7 @@ function render(){
 
   div.querySelectorAll("button").forEach(btn=>{
     const d=parseInt(btn.dataset.d);
-    btn.onclick=()=>{playClick();changePoints(p.id,d);};
+    btn.onclick=()=>{ play(clickSound); changePoints(p.id,d); };
   });
 
   root.appendChild(div);
