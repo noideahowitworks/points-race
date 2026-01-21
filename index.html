@@ -77,14 +77,19 @@ function changePoints(id,delta){
  render();
 
 // === ЗВУКИ КНОПОК ===
-const clickSound = new Audio("click.mp3");
-clickSound.volume = 0.5;
+let clickSound = null;
+try {
+  clickSound = new Audio("click.mp3");
+  clickSound.volume = 0.5;
+} catch(e) {}
 
 function playClick(){
+  if(!clickSound) return;
   try{
     clickSound.currentTime = 0;
     clickSound.play();
   }catch(e){}
+}catch(e){}
 }
 
  highlight(id,p.points-old);
