@@ -13,7 +13,9 @@ h1{text-align:center}
 .row{display:flex;align-items:center;gap:12px}
 .main{flex:1}
 .top{display:flex;align-items:center;gap:12px}
+.avatar{position:relative}
 .avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover}
+.medals{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap}
 .track{position:relative;background:#e5e7eb;height:22px;border-radius:12px;margin:10px 0 12px;overflow:hidden}
 .vehicle{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:22px;transition:left 1s ease}
 .track.flash-green{box-shadow:0 0 0 3px rgba(34,197,94,.6)}
@@ -36,16 +38,18 @@ const GOAL=50;
 const STORAGE_KEY="points_race";
 
 const defaultPlayers=[
- {id:1,name:"Luca",points:0,avatar:"luca.png",vehicle:"🐢",sound:"turtle.mp3"},
- {id:2,name:"Ezra",points:0,avatar:"ezra.png",vehicle:"🚀",sound:"rocket.mp3"},
- {id:3,name:"Raphael",points:0,avatar:"raphael.png",vehicle:"🐎",sound:"horse.mp3"}
+ {id:1,name:"Luca",points:0,medals:0,avatar:"luca.png",vehicle:"🐢",sound:"turtle.mp3"},
+ {id:2,name:"Ezra",points:0,medals:0,avatar:"ezra.png",vehicle:"🚀",sound:"rocket.mp3"},
+ {id:3,name:"Raphael",points:0,medals:0,avatar:"raphael.png",vehicle:"🐎",sound:"horse.mp3"}
 ];
 
 let players=load();
 
 function load(){
  const s=localStorage.getItem(STORAGE_KEY);
- return s?JSON.parse(s):JSON.parse(JSON.stringify(defaultPlayers));
+ const data=s?JSON.parse(s):JSON.parse(JSON.stringify(defaultPlayers));
+ data.forEach(p=>{if(p.medals===undefined)p.medals=0;});
+ return data;
 }
 
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(players));}
@@ -55,18 +59,10 @@ let clickSound=null, oopsSound=null;
 try{clickSound=new Audio("click.mp3"); clickSound.volume=0.5;}catch(e){}
 try{oopsSound=new Audio("oops.mp3"); oopsSound.volume=0.6;}catch(e){}
 
-function play(sound){
- if(!sound) return;
- try{sound.currentTime=0; sound.play();}catch(e){}
-}
+function play(sound){if(!sound)return;try{sound.currentTime=0;sound.play();}catch(e){}}
 
 function playTransportSound(player){
- if(!player.sound) return;
- try{
-  const s=new Audio(player.sound);
-  s.volume=0.7;
-  s.play();
- }catch(e){}
+ try{const s=new Audio(player.sound);s.volume=0.7;s.play();}catch(e){}
 }
 
 function changePoints(id,delta){
@@ -76,21 +72,16 @@ function changePoints(id,delta){
  p.points+=delta;
  save();
 
- const diff = p.points - old;
+ const diff=p.points-old;
 
- // задержка для движения и звука
  setTimeout(()=>{
    render();
    highlight(id,diff);
 
-   if(diff>0){
-     playTransportSound(p);
-   }else{
-     play(oopsSound);
-   }
+   if(diff>0){playTransportSound(p);}else{play(oopsSound);}  
 
    checkWinner();
- }, 650);
+ },650);
 }
 
 function highlight(id,diff){
@@ -103,16 +94,18 @@ function highlight(id,diff){
 
 function checkWinner(){
  const w=players.find(p=>p.points>=GOAL);
- if(w){
-  launchConfetti();
-  setTimeout(()=>{alert("🎉 Победитель: "+w.name);reset();},600);
- }
-}
+ if(!w) return;
 
-function reset(){
- players=JSON.parse(JSON.stringify(defaultPlayers));
- localStorage.removeItem(STORAGE_KEY);
- render();
+ w.medals++;
+ w.points=0;
+ save();
+
+ launchConfetti();
+
+ setTimeout(()=>{
+   alert(`🎉 ${w.name} получает медаль! (${w.medals}/5)`);
+   render();
+ },600);
 }
 
 function render(){
@@ -121,13 +114,18 @@ function render(){
 
  players.forEach(p=>{
   const progress=Math.max(0,Math.min(p.points/GOAL,1))*100;
+  const medals="🥇".repeat(Math.min(p.medals,5));
+
   const div=document.createElement("div");
   div.className="card";
   div.innerHTML=`
    <div class="row">
     <div class="main">
       <div class="top">
-        <div class="avatar"><img src="${p.avatar}"></div>
+        <div class="avatar">
+          <img src="${p.avatar}">
+          <div class="medals">${medals}</div>
+        </div>
         <div><b>${p.name}</b><br>${p.points}</div>
       </div>
       <div class="track" data-track="${p.id}">
@@ -147,7 +145,7 @@ function render(){
 
   div.querySelectorAll("button").forEach(btn=>{
     const d=parseInt(btn.dataset.d);
-    btn.onclick=()=>{ play(clickSound); changePoints(p.id,d); };
+    btn.onclick=()=>{play(clickSound);changePoints(p.id,d);};
   });
 
   root.appendChild(div);
