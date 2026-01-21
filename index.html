@@ -75,6 +75,18 @@ function changePoints(id,delta){
  p.points+=delta;
  save();
  render();
+
+// === ЗВУКИ КНОПОК ===
+const clickSound = new Audio("click.mp3");
+clickSound.volume = 0.5;
+
+function playClick(){
+  try{
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }catch(e){}
+}
+
  highlight(id,p.points-old);
  checkWinner();
 }
@@ -133,7 +145,10 @@ function render(){
 
   div.querySelectorAll("button").forEach(btn=>{
     const d=parseInt(btn.dataset.d);
-    btn.onclick=()=>changePoints(p.id,d);
+    btn.onclick=()=>{
+        playClick();
+        changePoints(p.id,d);
+      };
   });
 
   root.appendChild(div);
