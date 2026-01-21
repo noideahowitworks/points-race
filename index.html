@@ -16,10 +16,7 @@ h1{text-align:center}
 .avatar{position:relative}
 .avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover}
 .medals{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap}
- .big-medal {
-  font-size: 20px;
-  margin-left: 6px;
-}
+.big-medal{font-size:20px;margin-left:6px}
 .track{position:relative;background:#e5e7eb;height:22px;border-radius:12px;margin:10px 0 12px;overflow:hidden}
 .vehicle{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:22px;transition:left 1s ease}
 .track.flash-green{box-shadow:0 0 0 3px rgba(34,197,94,.6)}
@@ -35,6 +32,9 @@ button{border:none;border-radius:10px;padding:6px;font-size:14px;cursor:pointer}
 <body>
 
 <h1>🏁 Гонка за 50 пунктов</h1>
+<div style="text-align:center;margin-bottom:12px;">
+  <button id="resetAll" style="background:#64748b;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer">Сбросить всё</button>
+</div>
 <div class="players" id="players"></div>
 
 <script>
@@ -112,15 +112,21 @@ function checkWinner(){
  },600);
 }
 
+document.getElementById("resetAll").onclick=()=>{
+ if(!confirm("Сбросить все очки и медали?")) return;
+ players=JSON.parse(JSON.stringify(defaultPlayers));
+ save();
+ render();
+};
+
 function render(){
  const root=document.getElementById("players");
  root.innerHTML="";
 
  players.forEach(p=>{
   const progress=Math.max(0,Math.min(p.points/GOAL,1))*100;
- const smallMedals = "🥇".repeat(Math.min(p.medals, 4));
-const bigMedal = p.medals >= 5 ? "<span class='big-medal'>🏆</span>" : "";
-
+  const smallMedals="🥇".repeat(Math.min(p.medals,4));
+  const bigMedal = p.medals>=5 ? "<span class='big-medal'>🏆</span>" : "";
 
   const div=document.createElement("div");
   div.className="card";
@@ -129,10 +135,10 @@ const bigMedal = p.medals >= 5 ? "<span class='big-medal'>🏆</span>" : "";
     <div class="main">
       <div class="top">
         <div class="avatar">
-  <img src="${p.avatar}">
-  <div class="medals">${smallMedals}</div>
-</div>
-<div><b>${p.name}</b>${bigMedal}<br>${p.points}</div>
+          <img src="${p.avatar}">
+          <div class="medals">${smallMedals}</div>
+        </div>
+        <div><b>${p.name}</b>${bigMedal}<br>${p.points}</div>
       </div>
       <div class="track" data-track="${p.id}">
         <div class="vehicle" style="left:${progress}%">${p.vehicle}</div>
@@ -175,4 +181,3 @@ render();
 </script>
 </body>
 </html>
-
