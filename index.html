@@ -8,7 +8,14 @@
 <style>
 body{margin:0;padding:20px;font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#fde2e4,#e0f2fe)}
 h1{text-align:center}
-.players{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.layout{display:flex;gap:16px;max-width:1000px;margin:0 auto}
+.players{flex:1;display:flex;flex-direction:column;gap:16px}
+.rules{width:300px;background:#ffffffcc;border-radius:16px;padding:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);font-size:14px}
+.rules h3{text-align:center;margin-top:0}
+.rule{margin-bottom:10px}
+.rule ul{margin:4px 0 0 18px;padding:0}
+.rule.plus b{color:#16a34a}
+.rule.minus b{color:#dc2626}
 .card{background:#fff;border-radius:16px;padding:12px;box-shadow:0 4px 10px rgba(0,0,0,.1)}
 .row{display:flex;align-items:center;gap:12px}
 .main{flex:1}
@@ -35,7 +42,65 @@ button{border:none;border-radius:10px;padding:6px;font-size:14px;cursor:pointer}
 <div style="text-align:center;margin-bottom:12px;">
   <button id="resetAll" style="background:#64748b;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer">Сбросить всё</button>
 </div>
-<div class="players" id="players"></div>
+<div class="layout">
+  <div class="rules">
+    <h3>📋 Как получать пункты</h3>
+
+    <div class="rule plus"><b>+5</b>
+      <ul>
+        <li>Почитать Библию</li>
+        <li>Сделать д/з</li>
+        <li>Хорошо вести себя в церкви / на репетиции</li>
+        <li>Выучить стих или песню</li>
+        <li>Самому признаться в ошибке</li>
+      </ul>
+    </div>
+
+    <div class="rule plus"><b>+3</b>
+      <ul>
+        <li>Своя работа по дому</li>
+        <li>Общая работа по дому</li>
+        <li>Настольная игра без ссор</li>
+        <li>Выполнить просьбу с первого раза</li>
+      </ul>
+    </div>
+
+    <div class="rule plus"><b>+1</b>
+      <ul>
+        <li>Спорт</li>
+        <li>Раскраска</li>
+      </ul>
+    </div>
+
+    <div class="rule minus"><b>-5</b>
+      <ul>
+        <li>Соврать</li>
+        <li>Ударить</li>
+        <li>Обидеть брата / сестру</li>
+        <li>Угол</li>
+        <li>Плохо вести себя в церкви / на репетиции</li>
+      </ul>
+    </div>
+
+    <div class="rule minus"><b>-3</b>
+      <ul>
+        <li>Не сделать свою работу</li>
+        <li>Не сделать общую работу</li>
+        <li>Портить игру другим</li>
+      </ul>
+    </div>
+
+    <div class="rule minus"><b>-1</b>
+      <ul>
+        <li>Плохо кушать</li>
+        <li>Воровать сладости</li>
+        <li>Ломать вещи</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="players" id="players"></div>
+</div>
 
 <script>
 const GOAL=50;
